@@ -30,6 +30,7 @@ from mdtraj.testing import get_fn, eq, raises, assert_warns
 from mdtraj import load, load_pdb
 from mdtraj.utils import ilen
 from mdtraj import Topology
+from io import StringIO
 
 pdb = get_fn('native.pdb')
 fd, temp = tempfile.mkstemp(suffix='.pdb')
@@ -127,6 +128,11 @@ def test_write_large_2():
     traj = load(get_fn('native.pdb'))
     traj.xyz.fill(-123456789)
     traj.save(temp)
+
+def test_write_to_string():
+    traj = load(get_fn('native.pdb'))
+    result = traj.save_pdb(StringIO())
+    assert isinstance(result,str)
 
 def test_pdbstructure_0():
     pdb_lines = [
