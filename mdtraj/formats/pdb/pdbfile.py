@@ -57,6 +57,7 @@ from mdtraj.formats.registry import FormatRegistry
 from mdtraj.core import element as elem
 from mdtraj.utils import six
 from mdtraj import version
+from io import StringIO
 import warnings
 if six.PY3:
     from urllib.request import urlopen
@@ -270,7 +271,10 @@ class PDBTrajectoryFile(object):
         elif mode == 'w':
             self._header_written = False
             self._footer_written = False
-            self._file = open_maybe_zipped(filename, 'w', force_overwrite)
+            if isinstance(filename, StringIO):
+                self._file = filename
+            else:
+                self._file = open_maybe_zipped(filename, 'w', force_overwrite)
         else:
             raise ValueError("invalid mode: %s" % mode)
 

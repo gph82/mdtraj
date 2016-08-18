@@ -68,6 +68,7 @@ from mdtraj import find_closest_contact
 from mdtraj import FormatRegistry
 from mdtraj.geometry import distance
 
+from io import StringIO
 ##############################################################################
 # Globals
 ##############################################################################
@@ -1399,6 +1400,10 @@ class Trajectory(object):
                             self.topology,
                             modelIndex=i,
                             bfactors=bfactors[i])
+
+            if isinstance(f._file, StringIO):
+                return (f._file.getvalue())
+
 
     def save_xtc(self, filename, force_overwrite=True):
         """Save trajectory to Gromacs XTC format
