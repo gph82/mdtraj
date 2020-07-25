@@ -212,11 +212,14 @@ def compute_contacts(traj, contacts='all', scheme='closest-heavy', ignore_nonpro
         distances = np.zeros((len(traj), n_residue_pairs), dtype=np.float32)
         n_atom_pairs_per_residue_pair = np.asarray(n_atom_pairs_per_residue_pair)
 
+        aa_pair_idxs=[]
         for i in xrange(n_residue_pairs):
             index = int(np.sum(n_atom_pairs_per_residue_pair[:i]))
             n = n_atom_pairs_per_residue_pair[i]
             if not soft_min:
-                distances[:, i] = atom_distances[:, index : index + n].min(axis=1)
+                argmin_idxs = atom_distances[:, index : index + n].argmin(axis=1)
+                distances[:, i] = atom_distances[:, index : index + n][range(len(argmin_idxs)),argmin_idxs]
+                aa_pair_idxs.append(np.array(atom_pairs[index: index + n])[argmin_idxs])
             else:
                 distances[:, i] = soft_min_beta / \
                                   np.log(np.sum(np.exp(soft_min_beta/
@@ -225,7 +228,7 @@ def compute_contacts(traj, contacts='all', scheme='closest-heavy', ignore_nonpro
     else:
         raise ValueError('This is not supposed to happen!')
 
-    return distances, residue_pairs
+    return distances, residue_pairs, np.hstack(aa_pair_idxs)
 
 
 def squareform(distances, residue_pairs):
